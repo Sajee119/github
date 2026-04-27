@@ -304,4 +304,72 @@ If you want, I can give you:
 * ⚔️ **Merge conflict solving guide**
 * 🚀 **Beginner → advanced Git roadmap**
 
+
+# 🚀 Move Code from Another Branch to `main`
+
+You already pushed your code to a different branch, and now you want it in `main`. Here are the clean ways to fix it:
+
+---
+
+## ✅ Method 1: Merge your branch into `main` (Recommended)
+
+This keeps history clean and safe.
+
+### 🔹 Step 1: Switch to `main` branch
+```bash
+git checkout main
+````
+
+### 🔹 Step 2: Pull latest changes (important)
+
+```bash
+git pull origin main
+```
+
+### 🔹 Step 3: Merge your branch
+
+> Replace `your-branch-name` with your branch name
+
+```bash
+git merge your-branch-name
+```
+
+### 🔹 Step 4: Push to GitHub
+
+```bash
+git push origin main
+```
+
+---
+
+## ✅ Method 2: Push your branch directly into `main` (Quick way)
+
+If you don’t care about keeping the branch:
+
+```bash
+git push origin your-branch-name:main
+```
+
+👉 This sends your branch code directly to `main`.
+
+---
+
+## ✅ Method 3: Use GitHub UI (Easiest)
+
+1. Go to GitHub
+2. Open your repository
+3. You’ll see a button like **“Compare & pull request”**
+4. Click it → Create Pull Request → Merge into `main`
+
+---
+
+## ⚠️ Tips
+
+* If there are conflicts, Git will ask you to fix them before merging
+* Always pull the latest `main` before merging
+* Don’t delete your branch until everything works
+
+---
+
+
 Just tell me 👍
