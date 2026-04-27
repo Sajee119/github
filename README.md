@@ -1,3 +1,7 @@
+![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png)
+
+---
+
 Here’s a **clear, practical guide to Git commands you’ll use in Visual Studio Code (VS Code)**, with **descriptions and when to use them**.
 
 ---
