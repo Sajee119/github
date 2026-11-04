@@ -1,0 +1,78 @@
+# TEMPLATE: Deploy to Production
+# Copy this file into your project and configure secrets + registry details.
+# This template uses Docker + a container registry. Adjust for Vercel, Railway,
+# Fly.io, Heroku, AWS, GCP, or any other platform by replacing the Docker steps.
+
+name: Deploy to Production
+
+on:
+  # Uncomment once configured for your project:
+  # push:
+  #   tags:
+  #     - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for production
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.REGISTRY_URL }}/app:${{ github.ref_name }} .
+          docker tag ${{ secrets.REGISTRY_URL }}/app:${{ github.ref_name }} \
+                     ${{ secrets.REGISTRY_URL }}/app:latest
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.REGISTRY_URL }}/app:${{ github.ref_name }}
+          docker push ${{ secrets.REGISTRY_URL }}/app:latest
+
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "Deployment *${{ job.status }}* for `${{ github.ref_name }}` to *${{ github.event.inputs.environment || 'production' }}*"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
